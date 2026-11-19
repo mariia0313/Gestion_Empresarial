@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Matriz de Decisión para la Selección de un ERP</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #eff6ff;
+      --border: #cbd5e1;
+      --border-dark: #475569;
+      --text: #1e293b;
+      --muted: #64748b;
+      --winner-bg: #dcfce7;
+      --winner-text: #166534;
+      --winner-border: #22c55e;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f8fafc;
+      color: var(--text);
+      margin: 0;
+      padding: 2rem 1rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--border);
+    }
+
+    header {
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0 0 0.5rem 0;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .objetivo {
+      margin: 0;
+      font-size: 0.98rem;
+      color: #334155;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    button.btn {
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    button.btn:hover {
+      background: #f1f5f9;
+    }
+
+    button.btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    button.btn-primary:hover {
+      background: #1d4ed8;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 2rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+
+    th, td {
+      border: 1px solid var(--border-dark);
+      padding: 0.75rem;
+      vertical-align: middle;
+    }
+
+    thead th {
+      background-color: #f1f5f9;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #0f172a;
+    }
+
+    thead th.center,
+    tbody td.center,
+    tfoot td.center {
+      text-align: center;
+    }
+
+    .criterio-col {
+      width: 40%;
+      font-size: 0.92rem;
+    }
+
+    .peso-col {
+      width: 10%;
+      font-weight: 700;
+    }
+
+    .erp-col {
+      width: 16.66%;
+    }
+
+    .score-group {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .score-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      border-radius: 5px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .score-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .score-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .weighted-sub {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    tfoot tr {
+      background-color: #f1f5f9;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    tfoot td.total-label {
+      text-transform: uppercase;
+      color: #0f172a;
+    }
+
+    tfoot td.winner {
+      background-color: var(--winner-bg);
+      color: var(--winner-text);
+      outline: 2px solid var(--winner-border);
+      outline-offset: -2px;
+    }
+
+    .winner-badge {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 2px;
+      color: var(--winner-text);
+    }
+
+    .justificacion-box {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    .justificacion-box h2 {
+      font-size: 1.1rem;
+      margin: 0 0 0.4rem 0;
+      color: #0f172a;
+    }
+
+    .justificacion-box p {
+      font-size: 0.9rem;
+      color: #475569;
+      margin: 0 0 0.75rem 0;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      padding: 0.85rem;
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      resize: vertical;
+      color: var(--text);
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+      }
+      .toolbar {
+        display: none;
+      }
+      .score-btn:not(.active) {
+        display: none;
+      }
+      .score-btn.active {
+        background: transparent;
+        color: #000;
+        border: none;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>MATRIZ DE DECISIÓN PARA LA SELECCIÓN DE UN ERP</h1>
+      <p class="objetivo">
+        <strong>Objetivo:</strong> Comparar diferentes soluciones ERP y determinar cuál se adapta mejor a las necesidades de la empresa.[cite: 1]
+      </p>
+    </header>
+
+    <div class="toolbar">
+      <button type="button" class="btn" onclick="limpiarMatriz()">Limpiar matriz</button>
+      <button type="button" class="btn btn-primary" onclick="window.print()">Imprimir / Guardar PDF</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="matriz-erp">
+        <thead>
+          <tr>
+            <th class="criterio-col">Criterio</th>
+            <th class="peso-col center">Peso (%)</th>
+            <th class="erp-col center">Odoo Enterprise</th>
+            <th class="erp-col center">Holded</th>
+            <th class="erp-col center">MS Dynamics Business Central</th>
+          </tr>
+        </thead>
+        <tbody id="matriz-body"></tbody>
+        <tfoot>
+          <tr>
+            <td class="total-label">PUNTUACIÓN TOTAL PONDERADA</td>
+            <td class="center">100</td>
+            <td class="center" id="total-odoo">0,00</td>
+            <td class="center" id="total-holded">0,00</td>
+            <td class="center" id="total-dynamics">0,00</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <section class="justificacion-box">
+      <h2>Justificación de la decisión final</h2>
+      <p>
+        El ERP con mayor puntuación será, en principio, la alternativa más adecuada.[cite: 1] Redacta a continuación la justificación teniendo en cuenta las necesidades y particularidades de la empresa:[cite: 1]
+      </p>
+      <textarea
+        id="justificacion"
+        placeholder="Escribe aquí la justificación razonada de la elección del ERP..."
+        oninput="guardarEstado()"
+      ></textarea>
+    </section>
+  </div>
+
+  <script>
+    const criterios = [
+      { id: 'c1', nombre: 'Cobertura funcional (almacén, compras, ventas, CRM y contabilidad)', peso: 30 },
+      { id: 'c2', nombre: 'Coste total de propiedad (TCO) a 5 años', peso: 25 },
+      { id: 'c3', nombre: 'Capacidad de integración con otros programas y sistemas', peso: 15 },
+      { id: 'c4', nombre: 'Facilidad de uso, aprendizaje y disponibilidad de aplicación móvil', peso: 10 },
+      { id: 'c5', nombre: 'Adaptación a la normativa española (PGC, IVA, VeriFactu y facturación electrónica)', peso: 10 },
+      { id: 'c6', nombre: 'Disponibilidad de partners, implantadores y soporte técnico en la zona', peso: 10 }
+    ];
+
+    const erps = ['odoo', 'holded', 'dynamics'];
+    let estado = {};
+
+    function inicializarEstado() {
+      const guardado = localStorage.getItem('matriz_erp_simple');
+      if (guardado) {
+        try {
+          const parsed = JSON.parse(guardado);
+          estado = parsed.scores || {};
+          document.getElementById('justificacion').value = parsed.justificacion || '';
+        } catch (e) {
+          estado = {};
+        }
+      }
+
+      criterios.forEach(c => {
+        if (!estado[c.id]) {
+          estado[c.id] = { odoo: null, holded: null, dynamics: null };
+        }
+      });
+    }
+
+    function renderizarTabla() {
+      const tbody = document.getElementById('matriz-body');
+      tbody.innerHTML = '';
+
+      criterios.forEach(criterio => {
+        const tr = document.createElement('tr');
+
+        let celdasERP = '';
+        erps.forEach(erp => {
+          const valorActual = estado[criterio.id][erp];
+          const ponderado = valorActual !== null
+            ? ((valorActual * criterio.peso) / 3).toFixed(2).replace('.', ',') + ' pts'
+            : '—';
+
+          let botones = '';
+          for (let v = 0; v <= 3; v++) {
+            const activo = valorActual === v ? 'active' : '';
+            botones += `<button type="button" class="score-btn ${activo}" onclick="seleccionarValor('${criterio.id}', '${erp}', ${v})">${v}</button>`;
+          }
+
+          celdasERP += `
+            <td class="center">
+              <div class="score-group">${botones}</div>
+              <span class="weighted-sub" id="sub-${criterio.id}-${erp}">${ponderado}</span>
+            </td>
+          `;
+        });
+
+        tr.innerHTML = `
+          <td class="criterio-col">${criterio.nombre}</td>
+          <td class="peso-col center">${criterio.peso}</td>
+          ${celdasERP}
+        `;
+        tbody.appendChild(tr);
+      });
+
+      recalcularTotales();
+    }
+
+    function seleccionarValor(criterioId, erp, valor) {
+      estado[criterioId][erp] = (estado[criterioId][erp] === valor) ? null : valor;
+      guardarEstado();
+      renderizarTabla();
+    }
+
+    function recalcularTotales() {
+      const totales = { odoo: 0, holded: 0, dynamics: 0 };
+
+      criterios.forEach(c => {
+        erps.forEach(erp => {
+          const val = estado[c.id][erp];
+          if (val !== null) {
+            totales[erp] += (val * c.peso) / 3;
+          }
+        });
+      });
+
+      const maxPuntuacion = Math.max(...Object.values(totales));
+
+      erps.forEach(erp => {
+        const celda = document.getElementById(`total-${erp}`);
+        const valorFormateado = totales[erp].toFixed(2).replace('.', ',');
+        const esGanador = maxPuntuacion > 0 && Math.abs(totales[erp] - maxPuntuacion) < 0.001;
+
+        celda.classList.toggle('winner', esGanador);
+        celda.innerHTML = esGanador
+          ? `${valorFormateado}<span class="winner-badge">Mejor opción</span>`
+          : valorFormateado;
+      });
+    }
+
+    function guardarEstado() {
+      const payload = {
+        scores: estado,
+        justificacion: document.getElementById('justificacion').value
+      };
+      localStorage.setItem('matriz_erp_simple', JSON.stringify(payload));
+    }
+
+    function limpiarMatriz() {
+      criterios.forEach(c => {
+        estado[c.id] = { odoo: null, holded: null, dynamics: null };
+      });
+      document.getElementById('justificacion').value = '';
+      guardarEstado();
+      renderizarTabla();
+    }
+
+    inicializarEstado();
+    renderizarTabla();
+  </script>
+</body>
+</html>
