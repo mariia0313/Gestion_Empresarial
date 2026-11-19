@@ -100,7 +100,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 720px;
+      min-width: 600px;
     }
 
     th, td {
@@ -124,17 +124,17 @@
     }
 
     .criterio-col {
-      width: 40%;
+      width: 45%;
       font-size: 0.92rem;
     }
 
     .peso-col {
-      width: 10%;
+      width: 11%;
       font-weight: 700;
     }
 
     .erp-col {
-      width: 16.66%;
+      width: 22%;
     }
 
     .score-group {
@@ -268,7 +268,7 @@
     <header>
       <h1>MATRIZ DE DECISIÓN PARA LA SELECCIÓN DE UN ERP</h1>
       <p class="objetivo">
-        <strong>Objetivo:</strong> Comparar diferentes soluciones ERP y determinar cuál se adapta mejor a las necesidades de la empresa.[cite: 1]
+        <strong>Objetivo:</strong> Comparar diferentes soluciones ERP y determinar cuál se adapta mejor a las necesidades de la empresa.
       </p>
     </header>
 
@@ -284,7 +284,6 @@
             <th class="criterio-col">Criterio</th>
             <th class="peso-col center">Peso (%)</th>
             <th class="erp-col center">Odoo Enterprise</th>
-            <th class="erp-col center">Holded</th>
             <th class="erp-col center">MS Dynamics Business Central</th>
           </tr>
         </thead>
@@ -294,7 +293,6 @@
             <td class="total-label">PUNTUACIÓN TOTAL PONDERADA</td>
             <td class="center">100</td>
             <td class="center" id="total-odoo">0,00</td>
-            <td class="center" id="total-holded">0,00</td>
             <td class="center" id="total-dynamics">0,00</td>
           </tr>
         </tfoot>
@@ -304,7 +302,7 @@
     <section class="justificacion-box">
       <h2>Justificación de la decisión final</h2>
       <p>
-        El ERP con mayor puntuación será, en principio, la alternativa más adecuada.[cite: 1] Redacta a continuación la justificación teniendo en cuenta las necesidades y particularidades de la empresa:[cite: 1]
+        El ERP con mayor puntuación será, en principio, la alternativa más adecuada. Redacta a continuación la justificación teniendo en cuenta las necesidades y particularidades de la empresa:
       </p>
       <textarea
         id="justificacion"
@@ -324,7 +322,7 @@
       { id: 'c6', nombre: 'Disponibilidad de partners, implantadores y soporte técnico en la zona', peso: 10 }
     ];
 
-    const erps = ['odoo', 'holded', 'dynamics'];
+    const erps = ['odoo', 'dynamics'];
     let estado = {};
 
     function inicializarEstado() {
@@ -341,7 +339,7 @@
 
       criterios.forEach(c => {
         if (!estado[c.id]) {
-          estado[c.id] = { odoo: null, holded: null, dynamics: null };
+          estado[c.id] = { odoo: null, dynamics: null };
         }
       });
     }
@@ -392,7 +390,7 @@
     }
 
     function recalcularTotales() {
-      const totales = { odoo: 0, holded: 0, dynamics: 0 };
+      const totales = { odoo: 0, dynamics: 0 };
 
       criterios.forEach(c => {
         erps.forEach(erp => {
@@ -427,7 +425,7 @@
 
     function limpiarMatriz() {
       criterios.forEach(c => {
-        estado[c.id] = { odoo: null, holded: null, dynamics: null };
+        estado[c.id] = { odoo: null, dynamics: null };
       });
       document.getElementById('justificacion').value = '';
       guardarEstado();
